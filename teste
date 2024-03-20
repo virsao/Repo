@@ -5,3 +5,181 @@ git commit -m "primeiro commit"
 git branch -M main 
 git remote add origin https://github.com/virsao/Repo.git
  git push - sua origem principal
+-------------------------------
+Tela de cadastro Produto.
+
+Objetivo:
+Validar o funcionamento da tela de cadastro de produto, incluindo:
+
+Adição de produtos com nome, preço e validade.
+Exibição da listagem de produtos cadastrados.
+Validação de regras de negócio:
+Preço não pode ser menor que zero.
+Validade até 31/12/2021.
+
+Critérios de Aceitação:
+O sistema deve permitir a adição de produtos com nome, preço e validade.
+A listagem de produtos deve ser atualizada automaticamente após cada adição.
+O sistema deve impedir a adição de produtos com preço menor que zero.
+O sistema deve impedir a adição de produtos com validade após 31/12/2021.
+A listagem de produtos deve exibir os seguintes campos: nome, preço e validade.
+
+Regras de negócio:
+
+O campo "Descrição" não pode ser branco ou nulo
+O campo "preço" não pode ser menor que zero.
+O campo "Validade"  não dever permitir cadastro da data após 31/12/2021 ou data nula
+Os relatórios devem ser por ordem crescente de preço, decrescente de preço, por data cadastro, alfabética.
+
+
+Casos de Teste:
+
+1 Tela - Menos Completa
+
+ID      Descrição            Entrada        Resultado Esperado         Resultado teste       Status
+
+CT 01  Cadastrar Produto       Roda 29"     Produto cadastrado         Produto cadastrado    Aprovado
+       nome, preço e           R$ 350,00                                com sucesso
+	   data validade válida    30/11/2021
+
+CT 02  Cadastrar Produto sem    
+       nome, com preço e       R$ 140,00    Produto não cadastrado     Nome do produto é     Falhou
+	   	   data validade       31/12/2021                               obrigatório
+		   válida.
+		   
+CT 03   Cadastrar produto sem   Pneu 29"    Produto não cadastrado     Valor do produto é    Falhou
+        preço                    0,00                                   obrigatório
+		Data validade
+		Válida                  30/10/2021
+		
+CT 04   Cadastrar produto com   Guidon      Produto não cadastrado      Data validade tem    Falhou 
+        data validade depois    R$ 350,00                              ser até 31/12/2021
+		31/12/2021              05/01/2022
+		
+		
+2 Tela - Com poucas informações
+
+ID         Descrição            Entrada        Resultado Esperado         Resultado teste           Status
+
+      Editar produto
+CT 01    Roda 29"              Roda 27"        Produto alterado           Roda 27"                  Aprovado
+
+      Excluir Produto
+CT 02  Guidon	               Guidon          Produto Excluido           Produto não encontrado    Aprovado
+
+      Pesquisar produtos      
+	  por nome
+CT 03   Roda                  Roda              Roda 27"                  01 produto encontrado     Aprovado
+
+CT 04 Roda                    Roda 29"         Produto inexistente         Produto não encontrado   Aprovado
+
+     Pesquisar por valor
+CT 05  350,00                 350,00           Roda 27"                   01 produto encontrado     Aprovado
+
+
+
+3 Tela Completa
+
+ID         Descrição            Entrada        Resultado Esperado         Resultado teste           Status
+
+CT 01   Cadastrar Produto       Pedal XTR      Produto deve ser           Produto cadastrado        Aprovado
+        com imagem e            R$ 490,00      cadastrado com 
+		preço, validade e       31/12/2021     a imagem e todos
+		detalhes técnicos       selecione      detalhes técnicos
+								a imagem
+
+        
+CT 02  Alterar Produto         Pedal XTR      Produto deve ser alterado   Produto Alterado          Aprovado
+                               R$ 450,00      o preço e a imagem
+							   31/12/2021
+                              Escolha nova
+                              imagem							   
+ CT 03  Mostrar a Quantidade  Pedal           Deve ser mostrado            foram encontrados 
+        de produtos no                        as quantidades do produto    12 unidades no estoque   Aprovado
+		estoque                               digitado
+		
+ Excluir Produto
+ 
+CT 04  Guidon	               Guidon raze     Selecionar o Produto        Produto excluido         Aprovado
+                               Guidon 680mm    a ser excluído e concluir
+											   a ação.
+
+
+Resumo dos casos testes:
+
+No caso teste Tela 2 foram feitos somente cenários positivos, devido a tela ser de pouca informação. mas os
+CT 01 se ao editar e deixar o campo nome produto, valor, validade nulo ou branco o teste irá falhar sendo assim comtemplando o caminho infeliz do teste.
+CT 02 ao tentar excluir um produto e não inserir o nome produto a pesquisa não vai retornar valor e assim o teste vai falhar e comtempla o caminho infelis do teste.
+CT 03 e 04 A mesma situação para a pesquisa do produto, não inserir o nome produto a pesquisa não vai retornar valor e assim o teste vai falhar,comtempla o caminho infeliz do teste.
+CT 05 Ao pesquisar por valor deixar campo nulo a pesquisa vai falhar comtemplando o caminho infeliz do teste. 
+
+
+Caso teste Tela 3 foram somente feitos os testes do caminho feliz, sendo assim os 
+CT 01 ao cadastrar de deixar o campo nome nulo/branco ssim comtemplando o caminho infeliz do teste.
+CT 02 ao alterar produto e deixar o campo valor nulo, e/ou campo data validade nulo ou com data após 31/12/2021 vai dar falha e comtempla o caminho infeliz do teste.
+CT 03 ao deixar campo nome produto vazio e fazer a pesquisa vai dar falha e comtempla o caminho infeliz do teste.
+CT 04 ao tentar excluir um produto que tem mais de uma opção e não selecionar a desejada irá dar falha e comtempla o caminho infeliz do teste
+
+
+
+Automação feita em cypress:
+
+const { Given, When, Then } = require('cypress/lib/ cypress-cucumber');
+
+Given('que estou na tela de cadastro de produto', () => {
+  cy.visit('https://bikeall.com/cadastro-produto');
+});
+
+When('preencho os campos com nome "Roda 29", preço "350.00" e validade "30/11/2021"', () => {
+  const produto = {
+    nome: 'Roda 29',
+    preço: '350.00',
+    validade: '30/11/2021',
+  };
+
+  cy.get('#nome').type(produto.nome);
+  cy.get('#preço').type(produto.preço);
+  cy.get('#validade').type(produto.validade);
+});
+
+When('clico no botão de cadastrar', () => {
+  cy.get('button[type="submit"]').click();
+});
+
+Then('o produto deve ser adicionado à listagem', () => {
+  cy.get('.lista-produtos').should('contain', 'Produto 1');
+});
+
+-----
+
+const { Given, When, Then } = require('cypress/lib/ cypress-cucumber');
+
+Given('que um produto "Roda 29" já foi cadastrado', () => {
+  // Implementar a criação do produto pré-existente
+});
+
+When('seleciono o produto "Roda 29" e clico em "Editar"', () => {
+  // Implementar a seleção e edição do produto
+});
+
+When('altero o nome para "Roda 27"', () => {
+  cy.get('#nome').type('Produto Editado');
+});
+
+When('clico no botão de salvar', () => {
+  cy.get('button[type="submit"]').click();
+});
+
+Then('o produto deve ser atualizado na listagem', () => {
+  cy.get('.lista-produtos').should('contain', 'Produto Editado');
+});
+
+// Outros testes de edição...
+
+When('seleciono o produto "Guidon raze" e clico em "Excluir"', () => {
+  // Implementar a seleção e exclusão do produto
+});
+
+Then('o produto deve ser removido da listagem', () => {
+  cy.get('.lista-produtos').should('not.contain', 'Produto 1');
+});
